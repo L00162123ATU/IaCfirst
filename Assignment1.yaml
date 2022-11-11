@@ -55,4 +55,82 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : !Ref ResourceName  
+  
+  PublicSubnet1:  
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1
+      CidrBlock: 10.0.0.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : PublicSubnet1
+      VpcId: !Ref MyVPC
+
+  PrivateSubnet1:  
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1
+      CidrBlock: 10.0.1.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : PrivateSubnet1
+      VpcId: !Ref MyVPC    
+
+  PrivateSubnet2:  
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-2
+      CidrBlock: 10.0.2.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : PrivateSubnet2
+      VpcId: !Ref MyVPC    
+
+  PrivateSubnet3:  
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-2
+      CidrBlock: 10.0.3.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : PrivateSubnet3
+      VpcId: !Ref MyVPC    
+
+  InternetG:
+    Type: AWS::EC2::InternetGateway
+    Properties: 
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : InternetGateway
+
+  MyVPCGatewayattachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties: 
+      InternetGatewayId: !Ref InternetG
+      VpcId: !Ref MyVPC
+      VpnGatewayId: String
+
+
+
+
      
