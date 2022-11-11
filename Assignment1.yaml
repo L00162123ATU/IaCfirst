@@ -130,6 +130,19 @@ Resources:
       VpcId: !Ref MyVPC
       VpnGatewayId: String
 
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : RouteTable
+      VpcId: !Ref MyVPC
+
+
 
 
 
