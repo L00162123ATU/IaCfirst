@@ -1,0 +1,58 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description:
+  IaC Assignment1 Create Cloud formation stack for a small business mini network
+
+Metadata:
+  AWS::CloudFormation::Interface: 
+    ParameterGroups: 
+      - 
+        Label: 
+          default: "Network Configuration"
+        Parameters: 
+          - VPCCIDR
+      - 
+        Label: 
+          default: "Tags"
+        Parameters: 
+          - ProjectName
+          - ProjectID
+          - ResourceName   
+
+Parameters:
+  VPCCIDR:
+    Type: String
+    Default: 10.0.0.0/16
+    AllowedValues:
+      - 10.0.0.0/16
+      - 10.0.0.0/24
+    Description: Enter VPC CIDR
+
+  ProjectName:
+    Type: String
+    Description: Enter project name
+  
+  ProjectID:
+    Type: String
+    Description: Enter project ID
+
+  ResourceName:
+    Type: String
+    Description: Enter Resource name
+
+Resources:
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties: 
+      CidrBlock: !Ref VPCCIDR
+      EnableDnsHostnames: True
+      EnableDnsSupport: True
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : !Ref ResourceName  
+     
