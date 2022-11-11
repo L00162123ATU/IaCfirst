@@ -141,6 +141,14 @@ Resources:
         - Key : Resource Name
           Value : RouteTable
       VpcId: !Ref MyVPC
+  
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: MyVPCGatewayattachment
+    Properties: 0.0.0.0/0
+      GatewayId: !Ref InternetG
+      RouteTableId: !Ref RouteTable
+
 
 
 
