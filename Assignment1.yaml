@@ -155,6 +155,31 @@ Resources:
     Properties: 
       RouteTableId: !Ref RouteTable
       SubnetId: !Ref PublicSubnet1
+  
+  SecurityGroupPublic:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Allow http to client host
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : SecurityGroupPublic
+      VpcId: !Ref MyVPC 
+
+
 
 
 
