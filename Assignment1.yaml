@@ -145,9 +145,18 @@ Resources:
   PublicRoute:
     Type: AWS::EC2::Route
     DependsOn: MyVPCGatewayattachment
-    Properties: 0.0.0.0/0
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0 
       GatewayId: !Ref InternetG
       RouteTableId: !Ref RouteTable
+
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref RouteTable
+      SubnetId: !Ref PublicSubnet1
+
+
 
 
 
