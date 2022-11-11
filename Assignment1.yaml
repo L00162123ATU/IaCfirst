@@ -58,8 +58,9 @@ Resources:
   
   PublicSubnet1:  
     Type: AWS::EC2::Subnet
-    Properties: 
-      AvailabilityZone: us-east-1
+    Properties:
+      VpcId: !Ref MyVPC 
+      AvailabilityZone: us-east-1a
       CidrBlock: 10.0.0.0/24
       Tags: 
         - Key : Project Name
@@ -68,12 +69,13 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : PublicSubnet1
-      VpcId: !Ref MyVPC
+      
 
-  PrivateSubnet1:  
+  PrivateSubnet1:
     Type: AWS::EC2::Subnet
-    Properties: 
-      AvailabilityZone: us-east-1
+    Properties:
+      VpcId: !Ref MyVPC
+      AvailabilityZone: us-east-1a 
       CidrBlock: 10.0.1.0/24
       Tags: 
         - Key : Project Name
@@ -82,12 +84,12 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : PrivateSubnet1
-      VpcId: !Ref MyVPC    
 
   PrivateSubnet2:  
     Type: AWS::EC2::Subnet
-    Properties: 
-      AvailabilityZone: us-east-2
+    Properties:
+      VpcId: !Ref MyVPC
+      AvailabilityZone: us-east-1b
       CidrBlock: 10.0.2.0/24
       Tags: 
         - Key : Project Name
@@ -95,13 +97,13 @@ Resources:
         - Key : Project ID
           Value : !Ref ProjectID
         - Key : Resource Name
-          Value : PrivateSubnet2
-      VpcId: !Ref MyVPC    
+          Value : PrivateSubnet2   
 
   PrivateSubnet3:  
     Type: AWS::EC2::Subnet
     Properties: 
-      AvailabilityZone: us-east-2
+      VpcId: !Ref MyVPC
+      AvailabilityZone: us-east-1b 
       CidrBlock: 10.0.3.0/24
       Tags: 
         - Key : Project Name
@@ -109,8 +111,7 @@ Resources:
         - Key : Project ID
           Value : !Ref ProjectID
         - Key : Resource Name
-          Value : PrivateSubnet3
-      VpcId: !Ref MyVPC    
+          Value : PrivateSubnet3 
 
   InternetG:
     Type: AWS::EC2::InternetGateway
@@ -128,7 +129,6 @@ Resources:
     Properties: 
       InternetGatewayId: !Ref InternetG
       VpcId: !Ref MyVPC
-      VpnGatewayId: String
 
   RouteTable:
     Type: AWS::EC2::RouteTable
