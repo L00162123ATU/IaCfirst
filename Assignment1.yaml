@@ -71,7 +71,6 @@ Resources:
         - Key : Resource Name
           Value : PublicSubnet1
       
-
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -85,6 +84,53 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : PrivateSubnet1
+
+  SecurityGroupPrivate1:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Allow traffic to J
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/24
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.0.0.0/24
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 10.0.0.0/24 
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.0.1.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : SecurityGroupPrivate1
+      VpcId: !Ref MyVPC 
+  
+  ec2InstanceF:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-08c40ec9ead489470
+      KeyName: DemoCloudForm
+      SecurityGroupIds: [!Ref SecurityGroupPrivate1]
+      SubnetId: !Ref PrivateSubnet1
+      Tags:
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : SecurityGroupPrivate1 
 
   PrivateSubnet2:  
     Type: AWS::EC2::Subnet
@@ -174,7 +220,15 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 0.0.0.0/0
+          CidrIp: 10.0.1.0/24
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.1.0/24
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 10.0.1.0/24
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
