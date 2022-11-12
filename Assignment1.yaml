@@ -62,6 +62,7 @@ Resources:
       VpcId: !Ref MyVPC 
       AvailabilityZone: us-east-1a
       CidrBlock: 10.0.0.0/24
+      MapPublicIpOnLaunch: true
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
@@ -165,6 +166,10 @@ Resources:
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
         - IpProtocol: tcp
           FromPort: 80
@@ -178,7 +183,23 @@ Resources:
         - Key : Resource Name
           Value : SecurityGroupPublic
       VpcId: !Ref MyVPC 
-  
+
+  ec2InstanceJ:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-08c40ec9ead489470
+      KeyName: DemoCloudForm
+      SecurityGroupIds: [!Ref SecurityGroupPublic]
+      SubnetId: !Ref PublicSubnet1
+      Tags:
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : SecurityGroupPublic    
+         
   NACL:
     Type: AWS::EC2::NetworkAcl
     Properties: 
