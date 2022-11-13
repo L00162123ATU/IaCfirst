@@ -42,6 +42,7 @@ Parameters:
     Description: Enter Resource name
 
 Resources:
+ #VPC
   MyVPC:
     Type: AWS::EC2::VPC
     Properties: 
@@ -55,7 +56,7 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : !Ref ResourceName  
-  
+  # public subnet for J instance
   PublicSubnet1:  
     Type: AWS::EC2::Subnet
     Properties:
@@ -70,7 +71,7 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : PublicSubnet1
-      
+  # private subnet for F instance    
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -84,7 +85,7 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : PrivateSubnet1
-
+  # security group for F instance
   SecurityGroupPrivate1:
     Type: AWS::EC2::SecurityGroup
     Properties: 
@@ -115,7 +116,7 @@ Resources:
         - Key : Resource Name
           Value : SecurityGroupPrivate1
       VpcId: !Ref MyVPC 
-  
+  # F instance
   ec2InstanceF:
     Type: AWS::EC2::Instance
     Properties:
@@ -130,8 +131,10 @@ Resources:
         - Key : Project ID
           Value : !Ref ProjectID
         - Key : Resource Name
-          Value : SecurityGroupPrivate1 
-
+          Value : SecurityGroupPrivate1
+        - Key : Name
+          Value : Instance F           
+  # private subnet for A instance
   PrivateSubnet2:  
     Type: AWS::EC2::Subnet
     Properties:
@@ -145,7 +148,7 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : PrivateSubnet2   
-  
+  # A instance
   ec2InstanceA:
     Type: AWS::EC2::Instance
     Properties:
@@ -161,7 +164,53 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : SecurityGroupPrivate2   
+        - Key : Name
+          Value : instance A
+# route table for instance A
+  RouteTableInstA:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : RouteTableInstA
+      VpcId: !Ref MyVPC
+  #  route for NATGat 
+  NATGatewayRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0 
+      NatGatewayId: !Ref NATGateway
+      RouteTableId: !Ref RouteTableInstA
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref RouteTableInstA
+      SubnetId: !Ref PrivateSubnet2
+# NAT Gateway
+  NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      AllocationId: !GetAtt NATGatewayEIP.AllocationId
+      Tags:
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : NATGateway
+        - Key : Name
+          Value: NATGAtewayA
+  NATGatewayEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
 
+  # security group for A instance
   SecurityGroupPrivate2:
     Type: AWS::EC2::SecurityGroup
     Properties: 
@@ -183,7 +232,15 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 10.0.1.0/24
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 10.0.3.0/24
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 10.0.4.0/24
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
@@ -192,7 +249,7 @@ Resources:
         - Key : Resource Name
           Value : SecurityGroupPrivate1
       VpcId: !Ref MyVPC        
-
+# private subnet for D instance
   PrivateSubnet3:  
     Type: AWS::EC2::Subnet
     Properties: 
@@ -206,7 +263,7 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : PrivateSubnet3 
-
+# private subnet for D instance 
   PrivateSubnet4:  
     Type: AWS::EC2::Subnet
     Properties: 
@@ -220,7 +277,7 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : PrivateSubnet4 
-
+# D instance (database)
   DBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
@@ -238,7 +295,7 @@ Resources:
           Value: D
     DeletionPolicy: Snapshot
     UpdateReplacePolicy: Snapshot
-  
+  # Database subnet group
   DBSubnet:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
@@ -250,7 +307,7 @@ Resources:
       Tags:
         - Key: Name
           Value: DemoDBSubnetGroup
-  
+  # D instance security group
   DBEC2SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -265,7 +322,7 @@ Resources:
       Tags:
         - Key: Name
           Value: DemoDBSesurityGroup
-
+ # internet Gateway
   InternetG:
     Type: AWS::EC2::InternetGateway
     Properties: 
@@ -276,13 +333,13 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : InternetGateway
-
+  # Gateway attachment
   MyVPCGatewayattachment:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties: 
       InternetGatewayId: !Ref InternetG
       VpcId: !Ref MyVPC
-
+  # route table 
   RouteTable:
     Type: AWS::EC2::RouteTable
     Properties: 
@@ -294,7 +351,7 @@ Resources:
         - Key : Resource Name
           Value : RouteTable
       VpcId: !Ref MyVPC
-  
+  # public route for 
   PublicRoute:
     Type: AWS::EC2::Route
     DependsOn: MyVPCGatewayattachment
@@ -302,13 +359,13 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0 
       GatewayId: !Ref InternetG
       RouteTableId: !Ref RouteTable
-
+  # public subnet
   PublicSubnet1RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties: 
       RouteTableId: !Ref RouteTable
       SubnetId: !Ref PublicSubnet1
-  
+  # security group for public
   SecurityGroupPublic:
     Type: AWS::EC2::SecurityGroup
     Properties: 
@@ -357,7 +414,7 @@ Resources:
         - Key : Resource Name
           Value : SecurityGroupPublic
       VpcId: !Ref MyVPC 
-
+# J instance
   ec2InstanceJ:
     Type: AWS::EC2::Instance
     Properties:
@@ -372,8 +429,10 @@ Resources:
         - Key : Project ID
           Value : !Ref ProjectID
         - Key : Resource Name
-          Value : SecurityGroupPublic    
-         
+          Value : SecurityGroupPublic
+        - Key : Name
+          Value : Instance J    
+# Network Acl   
   NACL:
     Type: AWS::EC2::NetworkAcl
     Properties: 
