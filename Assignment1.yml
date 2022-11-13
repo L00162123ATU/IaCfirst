@@ -17,7 +17,7 @@ Metadata:
           default: "Tags"
         Parameters: 
           - ProjectName
-          - ProjectID
+          - ProjectID  
           - ResourceName   
 
 Parameters:
@@ -27,7 +27,7 @@ Parameters:
   ProjectName:
     Type: String
     Description: Enter project name
-  
+
   ProjectID:
     Type: String
     Description: Enter project ID
@@ -44,7 +44,7 @@ Resources:
     Properties:
       VpcId: 
         Fn::ImportValue: !Ref VPCId 
-      AvailabilityZone: us-east-1a 
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
       CidrBlock: 10.0.0.0/24
       MapPublicIpOnLaunch: true
       Tags: 
@@ -60,7 +60,7 @@ Resources:
     Properties:
       VpcId: 
         Fn::ImportValue: !Ref VPCId
-      AvailabilityZone: us-east-1a 
+      AvailabilityZone: !Select [ 0, !GetAZs '' ] 
       CidrBlock: 10.0.1.0/24
       Tags: 
         - Key : Project Name
@@ -125,7 +125,7 @@ Resources:
     Properties:
       VpcId: 
         Fn::ImportValue: !Ref VPCId
-      AvailabilityZone: us-east-1b
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
       CidrBlock: 10.0.2.0/24
       Tags: 
         - Key : Project Name
@@ -243,7 +243,7 @@ Resources:
     Properties: 
       VpcId: 
         Fn::ImportValue: !Ref VPCId
-      AvailabilityZone: us-east-1b 
+      AvailabilityZone: !Select [ 2, !GetAZs '' ]
       CidrBlock: 10.0.3.0/24
       Tags: 
         - Key : Project Name
@@ -258,7 +258,7 @@ Resources:
     Properties: 
       VpcId: 
         Fn::ImportValue: !Ref VPCId
-      AvailabilityZone: us-east-1c 
+      AvailabilityZone: !Select [ 3, !GetAZs '' ]
       CidrBlock: 10.0.4.0/24
       Tags: 
         - Key : Project Name
