@@ -60,7 +60,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref MyVPC 
-      AvailabilityZone: us-east-1a
+      AvailabilityZone: us-east-1a 
       CidrBlock: 10.0.0.0/24
       MapPublicIpOnLaunch: true
       Tags: 
@@ -145,6 +145,53 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : PrivateSubnet2   
+  
+  ec2InstanceA:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0753877c9c4e0fdda
+      KeyName: DemoCloudForm
+      SecurityGroupIds: [!Ref SecurityGroupPrivate2]
+      SubnetId: !Ref PrivateSubnet2
+      Tags:
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : SecurityGroupPrivate2   
+
+  SecurityGroupPrivate2:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Allow traffic to A
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/24
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.0.0.0/24
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 10.0.0.0/24 
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.0.1.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : SecurityGroupPrivate1
+      VpcId: !Ref MyVPC        
 
   PrivateSubnet3:  
     Type: AWS::EC2::Subnet
@@ -159,6 +206,65 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : PrivateSubnet3 
+
+  PrivateSubnet4:  
+    Type: AWS::EC2::Subnet
+    Properties: 
+      VpcId: !Ref MyVPC
+      AvailabilityZone: us-east-1c 
+      CidrBlock: 10.0.4.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : PrivateSubnet4 
+
+  DBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBSubnetGroupName: !Ref DBSubnet
+      DBInstanceIdentifier: DemoDB
+      VPCSecurityGroups:
+        - !GetAtt DBEC2SecurityGroup.GroupId
+      AllocatedStorage: "5"
+      DBInstanceClass: db.t3.micro
+      Engine: postgres
+      MasterUsername: sa
+      MasterUserPassword: "12345678"
+      Tags:
+        - Key: Name
+          Value: D
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+  
+  DBSubnet:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: DemoDBSubnetGroup
+      DBSubnetGroupDescription: DemoDBSubnetGroup
+      SubnetIds:
+        - !Ref PrivateSubnet3
+        - !Ref PrivateSubnet4
+      Tags:
+        - Key: Name
+          Value: DemoDBSubnetGroup
+  
+  DBEC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref MyVPC
+      GroupName: DemoDBSesurityGroup
+      GroupDescription: Allow postgres inbound traffic
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: "0.0.0.0/0"
+      Tags:
+        - Key: Name
+          Value: DemoDBSesurityGroup
 
   InternetG:
     Type: AWS::EC2::InternetGateway
@@ -217,6 +323,7 @@ Resources:
           ToPort: 22
           CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
+# allowing traffic to F
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
@@ -229,6 +336,19 @@ Resources:
           FromPort: -1
           ToPort: -1
           CidrIp: 10.0.1.0/24
+ # allowing traffic to A         
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.0.2.0/24
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.2.0/24
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 10.0.2.0/24
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
