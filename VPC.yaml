@@ -1,0 +1,38 @@
+#VPC
+Parameters:
+  VPCId:
+    Type: String  
+  VPCCIDR:
+    Type: String
+    Default: 10.0.0.0/16
+    AllowedValues:
+      - 10.0.0.0/16
+      - 10.0.0.0/24
+    Description: Enter VPC CIDR
+  ProjectName:
+    Type: String 
+  ProjectID:
+    Type: String
+  ResourceName:
+    Type: String  
+    
+Resources:  
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties: 
+      CidrBlock: !Ref VPCCIDR
+      EnableDnsHostnames: True
+      EnableDnsSupport: True
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Project ID
+          Value : !Ref ProjectID
+        - Key : Resource Name
+          Value : !Ref ResourceName  
+Outputs:
+  MyVPC:
+    Value:
+      Ref: MyVPC
+    Export:
+      Name: !Ref VPCId

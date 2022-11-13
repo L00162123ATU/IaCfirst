@@ -21,13 +21,8 @@ Metadata:
           - ResourceName   
 
 Parameters:
-  VPCCIDR:
+  VPCId:
     Type: String
-    Default: 10.0.0.0/16
-    AllowedValues:
-      - 10.0.0.0/16
-      - 10.0.0.0/24
-    Description: Enter VPC CIDR
 
   ProjectName:
     Type: String
@@ -42,25 +37,13 @@ Parameters:
     Description: Enter Resource name
 
 Resources:
- #VPC
-  MyVPC:
-    Type: AWS::EC2::VPC
-    Properties: 
-      CidrBlock: !Ref VPCCIDR
-      EnableDnsHostnames: True
-      EnableDnsSupport: True
-      Tags: 
-        - Key : Project Name
-          Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : !Ref ResourceName  
+ 
   # public subnet for J instance
   PublicSubnet1:  
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref MyVPC 
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId 
       AvailabilityZone: us-east-1a 
       CidrBlock: 10.0.0.0/24
       MapPublicIpOnLaunch: true
@@ -75,7 +58,8 @@ Resources:
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref MyVPC
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
       AvailabilityZone: us-east-1a 
       CidrBlock: 10.0.1.0/24
       Tags: 
@@ -115,7 +99,8 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : SecurityGroupPrivate1
-      VpcId: !Ref MyVPC 
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId 
   # F instance
   ec2InstanceF:
     Type: AWS::EC2::Instance
@@ -138,7 +123,8 @@ Resources:
   PrivateSubnet2:  
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref MyVPC
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
       AvailabilityZone: us-east-1b
       CidrBlock: 10.0.2.0/24
       Tags: 
@@ -177,7 +163,8 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : RouteTableInstA
-      VpcId: !Ref MyVPC
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
   #  route for NATGat 
   NATGatewayRoute:
     Type: AWS::EC2::Route
@@ -248,12 +235,14 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : SecurityGroupPrivate1
-      VpcId: !Ref MyVPC        
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId        
 # private subnet for D instance
   PrivateSubnet3:  
     Type: AWS::EC2::Subnet
     Properties: 
-      VpcId: !Ref MyVPC
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
       AvailabilityZone: us-east-1b 
       CidrBlock: 10.0.3.0/24
       Tags: 
@@ -267,7 +256,8 @@ Resources:
   PrivateSubnet4:  
     Type: AWS::EC2::Subnet
     Properties: 
-      VpcId: !Ref MyVPC
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
       AvailabilityZone: us-east-1c 
       CidrBlock: 10.0.4.0/24
       Tags: 
@@ -311,7 +301,8 @@ Resources:
   DBEC2SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId: !Ref MyVPC
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
       GroupName: DemoDBSesurityGroup
       GroupDescription: Allow postgres inbound traffic
       SecurityGroupIngress:
@@ -338,7 +329,8 @@ Resources:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties: 
       InternetGatewayId: !Ref InternetG
-      VpcId: !Ref MyVPC
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
   # route table 
   RouteTable:
     Type: AWS::EC2::RouteTable
@@ -350,7 +342,8 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : RouteTable
-      VpcId: !Ref MyVPC
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
   # public route for 
   PublicRoute:
     Type: AWS::EC2::Route
@@ -413,7 +406,8 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : SecurityGroupPublic
-      VpcId: !Ref MyVPC 
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId 
 # J instance
   ec2InstanceJ:
     Type: AWS::EC2::Instance
@@ -443,7 +437,8 @@ Resources:
           Value : !Ref ProjectID
         - Key : Resource Name
           Value : SecurityGroupPublic
-      VpcId: !Ref MyVPC 
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId 
   
   NACLEntry:
     Type: AWS::EC2::NetworkAclEntry
