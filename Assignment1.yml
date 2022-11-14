@@ -17,8 +17,7 @@ Metadata:
           default: "Tags"
         Parameters: 
           - ProjectName
-          - ProjectID  
-          - ResourceName  + 
+
 
 Parameters:
   VPCId:
@@ -28,13 +27,6 @@ Parameters:
     Type: String
     Description: Enter project name
 
-  ProjectID:
-    Type: String
-    Description: Enter project ID
-
-  ResourceName:
-    Type: String
-    Description: Enter Resource name
 
 Resources:
  
@@ -50,10 +42,6 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : PublicSubnet1
   # private subnet for F instance    
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
@@ -65,10 +53,6 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : PrivateSubnet1
   # security group for F instance
   SecurityGroupPrivate1:
     Type: AWS::EC2::SecurityGroup
@@ -95,10 +79,6 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : SecurityGroupPrivate1
       VpcId: 
         Fn::ImportValue: !Ref VPCId 
   # F instance
@@ -113,10 +93,6 @@ Resources:
       Tags:
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : SecurityGroupPrivate1
         - Key : Name
           Value : Instance F           
   # private subnet for A instance
@@ -130,10 +106,6 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : PrivateSubnet2   
   # A instance
   ec2InstanceA:
     Type: AWS::EC2::Instance
@@ -146,10 +118,6 @@ Resources:
       Tags:
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : SecurityGroupPrivate2   
         - Key : Name
           Value : instance A
 # route table for instance A
@@ -159,10 +127,6 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : RouteTableInstA
       VpcId: 
         Fn::ImportValue: !Ref VPCId
   #  route for NATGat 
@@ -186,10 +150,6 @@ Resources:
       Tags:
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : NATGateway
         - Key : Name
           Value: NATGAtewayA
   NATGatewayEIP:
@@ -231,10 +191,6 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : SecurityGroupPrivate1
       VpcId: 
         Fn::ImportValue: !Ref VPCId        
 # private subnet for D instance
@@ -248,10 +204,6 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : PrivateSubnet3 
 # private subnet for D instance 
   PrivateSubnet4:  
     Type: AWS::EC2::Subnet
@@ -263,10 +215,6 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : PrivateSubnet4 
 # D instance (database)
   DBInstance:
     Type: AWS::RDS::DBInstance
@@ -320,10 +268,6 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : InternetGateway
   # Gateway attachment
   MyVPCGatewayattachment:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -338,10 +282,6 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : RouteTable
       VpcId: 
         Fn::ImportValue: !Ref VPCId
   # public route 
@@ -402,10 +342,6 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : SecurityGroupPublic
       VpcId: 
         Fn::ImportValue: !Ref VPCId 
 # J instance
@@ -420,10 +356,6 @@ Resources:
       Tags:
         - Key : Project Name
           Value : !Ref ProjectName
-        - Key : Project ID
-          Value : !Ref ProjectID
-        - Key : Resource Name
-          Value : SecurityGroupPublic
         - Key : Name
           Value : Instance J    
 

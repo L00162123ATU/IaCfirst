@@ -12,10 +12,6 @@ Parameters:
     Description: Enter VPC CIDR
   ProjectName:
     Type: String
-  ProjectID:
-    Type: String
-  ResourceName:
-    Type: String  
     
 Resources:  
   MyVPC:
@@ -27,7 +23,8 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
-       
+
+
 Outputs:
   MyVPC:
     Value:
