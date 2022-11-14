@@ -1,0 +1,186 @@
+Parameters:
+  VPCId:
+    Type: String
+    Default: MyVPC  
+  InternetGatewayId:
+    Type: String
+    Default: InternetG
+  PublicSubnet1Id:
+    Type: String
+    Default: PublicSubnet1
+  PrivateSubnet1Id:
+    Type: String
+    Default: PrivateSubnet1
+  PrivateSubnet2Id:
+    Type: String
+    Default: PrivateSubnet2
+  #PrivateSubnet3Id:
+  #  Type: String
+  #  Default: PrivateSubnet3    
+  #PrivateSubnet4Id:
+  #  Type: String
+  #  Default: PrivateSubnet4
+  ProjectName:
+    Type: String
+    Description: Enter project name
+    Default: VPCYamal
+
+Resources:
+
+# security group for public
+  SecurityGroupPublic:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Allow http to client host
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+# allowing traffic to F
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.0.1.0/24
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.1.0/24
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 10.0.1.0/24
+ # allowing traffic to A         
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.0.2.0/24
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.2.0/24
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 10.0.2.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId 
+# J instance
+  ec2InstanceJ:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-08c40ec9ead489470
+      KeyName: DemoCloudForm
+      SecurityGroupIds: [!Ref SecurityGroupPublic]
+      SubnetId: 
+        Fn::ImportValue: !Ref PublicSubnet1Id
+      Tags:
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Name
+          Value : Instance J    
+
+  # security group for F instance
+  SecurityGroupPrivate1:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Allow traffic to F
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/24
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.0.0.0/24
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 10.0.0.0/24 
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.0.1.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId 
+  # F instance
+  ec2InstanceF:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-08c40ec9ead489470
+      KeyName: DemoCloudForm
+      SecurityGroupIds: [!Ref SecurityGroupPrivate1]
+      SubnetId: 
+        Fn::ImportValue: !Ref PrivateSubnet1Id
+      Tags:
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Name
+          Value : Instance F           
+ 
+  # security group for A instance
+  SecurityGroupPrivate2:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Allow traffic to A
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/24
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.0.0.0/24
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 10.0.0.0/24 
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 10.0.3.0/24
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 10.0.4.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId        
+  # A instance
+  ec2InstanceA:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0753877c9c4e0fdda
+      KeyName: DemoCloudForm
+      SecurityGroupIds: [!Ref SecurityGroupPrivate2]
+      SubnetId: 
+        Fn::ImportValue: !Ref PrivateSubnet2Id
+      Tags:
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Name
+          Value : instance A
