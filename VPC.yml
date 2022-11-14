@@ -12,7 +12,9 @@ Parameters:
     Description: Enter VPC CIDR
   ProjectName:
     Type: String
-    
+  InternetGatewayId:
+    Type: String
+    Default: InternetG 
 Resources:  
   MyVPC:
     Type: AWS::EC2::VPC
@@ -23,6 +25,19 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
+ # internet Gateway
+  InternetG:
+    Type: AWS::EC2::InternetGateway
+    Properties: 
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+  # Gateway attachment
+  MyVPCGatewayattachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties: 
+      InternetGatewayId: !Ref InternetG
+      VpcId: !Ref MyVPC
 
 
 Outputs:
@@ -31,3 +46,10 @@ Outputs:
       Ref: MyVPC
     Export:
       Name: !Ref VPCId
+  InternetG:
+    Value: 
+      Ref: InternetG
+    Export:
+      Name: !Ref InternetGatewayId
+
+  

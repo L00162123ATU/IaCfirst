@@ -26,33 +26,16 @@ Parameters:
   ProjectName:
     Type: String
     Description: Enter project name
+  
+  InternetGatewayId:
+    Type: String
+    Default: InternetG 
+
 
 
 Resources:
  
-  # public subnet for J instance
-  PublicSubnet1:  
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: 
-        Fn::ImportValue: !Ref VPCId 
-      AvailabilityZone: !Select [ 0, !GetAZs '' ]
-      CidrBlock: 10.0.0.0/24
-      MapPublicIpOnLaunch: true
-      Tags: 
-        - Key : Project Name
-          Value : !Ref ProjectName
-  # private subnet for F instance    
-  PrivateSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: 
-        Fn::ImportValue: !Ref VPCId
-      AvailabilityZone: !Select [ 0, !GetAZs '' ] 
-      CidrBlock: 10.0.1.0/24
-      Tags: 
-        - Key : Project Name
-          Value : !Ref ProjectName
+
   # security group for F instance
   SecurityGroupPrivate1:
     Type: AWS::EC2::SecurityGroup
@@ -95,17 +78,7 @@ Resources:
           Value : !Ref ProjectName
         - Key : Name
           Value : Instance F           
-  # private subnet for A instance
-  PrivateSubnet2:  
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: 
-        Fn::ImportValue: !Ref VPCId
-      AvailabilityZone: !Select [ 1, !GetAZs '' ]
-      CidrBlock: 10.0.2.0/24
-      Tags: 
-        - Key : Project Name
-          Value : !Ref ProjectName
+ 
   # A instance
   ec2InstanceA:
     Type: AWS::EC2::Instance
@@ -120,42 +93,6 @@ Resources:
           Value : !Ref ProjectName
         - Key : Name
           Value : instance A
-# route table for instance A
-  RouteTableInstA:
-    Type: AWS::EC2::RouteTable
-    Properties: 
-      Tags: 
-        - Key : Project Name
-          Value : !Ref ProjectName
-      VpcId: 
-        Fn::ImportValue: !Ref VPCId
-  #  route for NATGat 
-  NATGatewayRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      DestinationCidrBlock: 0.0.0.0/0 
-      NatGatewayId: !Ref NATGateway
-      RouteTableId: !Ref RouteTableInstA
-  PrivateSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties: 
-      RouteTableId: !Ref RouteTableInstA
-      SubnetId: !Ref PrivateSubnet2
-# NAT Gateway
-  NATGateway:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      SubnetId: !Ref PublicSubnet1
-      AllocationId: !GetAtt NATGatewayEIP.AllocationId
-      Tags:
-        - Key : Project Name
-          Value : !Ref ProjectName
-        - Key : Name
-          Value: NATGAtewayA
-  NATGatewayEIP:
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
 
   # security group for A instance
   SecurityGroupPrivate2:
@@ -193,28 +130,6 @@ Resources:
           Value : !Ref ProjectName
       VpcId: 
         Fn::ImportValue: !Ref VPCId        
-# private subnet for D instance
-  PrivateSubnet3:  
-    Type: AWS::EC2::Subnet
-    Properties: 
-      VpcId: 
-        Fn::ImportValue: !Ref VPCId
-      AvailabilityZone: !Select [ 2, !GetAZs '' ]
-      CidrBlock: 10.0.3.0/24
-      Tags: 
-        - Key : Project Name
-          Value : !Ref ProjectName
-# private subnet for D instance 
-  PrivateSubnet4:  
-    Type: AWS::EC2::Subnet
-    Properties: 
-      VpcId: 
-        Fn::ImportValue: !Ref VPCId
-      AvailabilityZone: !Select [ 3, !GetAZs '' ]
-      CidrBlock: 10.0.4.0/24
-      Tags: 
-        - Key : Project Name
-          Value : !Ref ProjectName
 # D instance (database)
   DBInstance:
     Type: AWS::RDS::DBInstance
@@ -261,43 +176,6 @@ Resources:
       Tags:
         - Key: Name
           Value: DemoDBSesurityGroup
- # internet Gateway
-  InternetG:
-    Type: AWS::EC2::InternetGateway
-    Properties: 
-      Tags: 
-        - Key : Project Name
-          Value : !Ref ProjectName
-  # Gateway attachment
-  MyVPCGatewayattachment:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties: 
-      InternetGatewayId: !Ref InternetG
-      VpcId: 
-        Fn::ImportValue: !Ref VPCId
-  # route table 
-  RouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties: 
-      Tags: 
-        - Key : Project Name
-          Value : !Ref ProjectName
-      VpcId: 
-        Fn::ImportValue: !Ref VPCId
-  # public route 
-  PublicRoute:
-    Type: AWS::EC2::Route
-    DependsOn: MyVPCGatewayattachment
-    Properties:
-      DestinationCidrBlock: 0.0.0.0/0 
-      GatewayId: !Ref InternetG
-      RouteTableId: !Ref RouteTable
-  # public subnet
-  PublicSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties: 
-      RouteTableId: !Ref RouteTable
-      SubnetId: !Ref PublicSubnet1
   # security group for public
   SecurityGroupPublic:
     Type: AWS::EC2::SecurityGroup

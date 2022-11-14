@@ -1,0 +1,181 @@
+ 
+ 
+Parameters:
+  VPCId:
+    Type: String
+    Default: MyVPC  
+  InternetGatewayId:
+    Type: String
+    Default: InternetG
+  PublicSubnet1Id:
+    Type: String
+    Default: PublicSubnet1
+  PrivateSubnet1Id:
+    Type: String
+    Default: PrivateSubnet1
+  PrivateSubnet2Id:
+    Type: String
+    Default: PrivateSubnet2
+  PrivateSubnet3Id:
+    Type: String
+    Default: PrivateSubnet3    
+  PrivateSubnet4Id:
+    Type: String
+    Default: PrivateSubnet4
+  ProjectName:
+    Type: String
+    Description: Enter project name
+    Default: VPCYamal
+
+Resources:    
+
+  # public subnet for J instance
+  PublicSubnet1:  
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId 
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: 10.0.0.0/24
+      MapPublicIpOnLaunch: true
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+
+   # route table 
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
+  # public route 
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0 
+      GatewayId: 
+        Fn::ImportValue: !Ref InternetGatewayId
+      RouteTableId: !Ref RouteTable
+  # public subnet
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref RouteTable
+      SubnetId: !Ref PublicSubnet1
+ 
+          
+  # private subnet for F instance    
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
+      AvailabilityZone: !Select [ 0, !GetAZs '' ] 
+      CidrBlock: 10.0.1.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+
+# NAT Gateway
+  NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      AllocationId: !GetAtt NATGatewayEIP.AllocationId
+      Tags:
+        - Key : Project Name
+          Value : !Ref ProjectName
+        - Key : Name
+          Value: NATGAtewayA
+  NATGatewayEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+   # private subnet for A instance
+  PrivateSubnet2:  
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      CidrBlock: 10.0.2.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+  # route table for instance A
+  RouteTableInstA:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
+  #  route for NATGat 
+  NATGatewayRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0 
+      NatGatewayId: !Ref NATGateway
+      RouteTableId: !Ref RouteTableInstA
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref RouteTableInstA
+      SubnetId: !Ref PrivateSubnet2
+
+# private subnet for D instance
+  PrivateSubnet3:  
+    Type: AWS::EC2::Subnet
+    Properties: 
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
+      AvailabilityZone: !Select [ 2, !GetAZs '' ]
+      CidrBlock: 10.0.3.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+# private subnet for D instance 
+  PrivateSubnet4:  
+    Type: AWS::EC2::Subnet
+    Properties: 
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
+      AvailabilityZone: !Select [ 3, !GetAZs '' ]
+      CidrBlock: 10.0.4.0/24
+      Tags: 
+        - Key : Project Name
+          Value : !Ref ProjectName
+
+
+
+Outputs:
+  PublicSubnet1:
+    Value:
+      Ref: PublicSubnet1
+    Export:
+      Name: !Ref PublicSubnet1Id
+  PrivateSubnet1:
+    Value:
+      Ref: PrivateSubnet1
+    Export:
+      Name: !Ref PrivateSubnet1Id
+  PrivateSubnet2:
+    Value:
+      Ref: PrivateSubnet2
+    Export:
+      Name: !Ref PrivateSubnet2Id
+  PrivateSubnet3:
+    Value:
+      Ref: PrivateSubnet3
+    Export:
+      Name: !Ref PrivateSubnet3Id
+  PrivateSubnet4:
+    Value:
+      Ref: PrivateSubnet4
+    Export:
+      Name: !Ref PrivateSubnet4Id        
