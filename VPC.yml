@@ -1,7 +1,8 @@
 #VPC
 Parameters:
   VPCId:
-    Type: String  
+    Type: String
+    Default: MyVPC  
   VPCCIDR:
     Type: String
     Default: 10.0.0.0/16
