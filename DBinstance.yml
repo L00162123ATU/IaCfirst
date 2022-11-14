@@ -1,0 +1,76 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description:
+  IaC Assignment1 Create Cloud formation stack for a small business mini network
+  DBInstance
+
+
+Parameters:
+  VPCId:
+    Type: String
+    Default: MyVPC  
+  InternetGatewayId:
+    Type: String
+    Default: InternetG
+  PrivateSubnet3Id:
+    Type: String
+    Default: PrivateSubnet3    
+  PrivateSubnet4Id:
+    Type: String
+    Default: PrivateSubnet4
+  ProjectName:
+    Type: String
+    Description: Enter project name
+    Default: VPCYamal
+
+Resources:
+ 
+# D instance (database)
+  DBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBSubnetGroupName: !Ref DBSubnet
+      DBInstanceIdentifier: DemoDB
+      VPCSecurityGroups:
+        - !GetAtt DBEC2SecurityGroup.GroupId
+      AllocatedStorage: "5"
+      DBInstanceClass: db.t3.micro
+      Engine: postgres
+      MasterUsername: sa
+      MasterUserPassword: "12345678"
+      Tags:
+        - Key: Name
+          Value: D
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+  
+  # Database subnet group
+  DBSubnet:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: DemoDBSubnetGroup
+      DBSubnetGroupDescription: DemoDBSubnetGroup
+      SubnetIds:
+        - Fn::ImportValue: !Ref PrivateSubnet3Id
+        - Fn::ImportValue: !Ref PrivateSubnet4Id
+      Tags:
+        - Key: Name
+          Value: DemoDBSubnetGroup
+  # D instance security group
+  DBEC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: 
+        Fn::ImportValue: !Ref VPCId
+      GroupName: DemoDBSesurityGroup
+      GroupDescription: Allow postgres inbound traffic
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: "0.0.0.0/0"
+      Tags:
+        - Key: Name
+          Value: DemoDBSesurityGroup
+

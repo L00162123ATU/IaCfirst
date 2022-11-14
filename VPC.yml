@@ -1,3 +1,11 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description:
+  IaC Assignment1 Create Cloud formation stack for a small business mini network
+  VPC and InternetGateway
+
+
 #VPC
 Parameters:
   VPCId:

@@ -1,3 +1,11 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description:
+  IaC Assignment1 Create Cloud formation stack for a small business mini network
+  Instances and SecurityGroups
+
+
 Parameters:
   VPCId:
     Type: String
@@ -14,12 +22,7 @@ Parameters:
   PrivateSubnet2Id:
     Type: String
     Default: PrivateSubnet2
-  #PrivateSubnet3Id:
-  #  Type: String
-  #  Default: PrivateSubnet3    
-  #PrivateSubnet4Id:
-  #  Type: String
-  #  Default: PrivateSubnet4
+
   ProjectName:
     Type: String
     Description: Enter project name

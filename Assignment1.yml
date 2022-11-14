@@ -33,54 +33,6 @@ Parameters:
 
 
 
-Resources:
- 
-# D instance (database)
-  DBInstance:
-    Type: AWS::RDS::DBInstance
-    Properties:
-      DBSubnetGroupName: !Ref DBSubnet
-      DBInstanceIdentifier: DemoDB
-      VPCSecurityGroups:
-        - !GetAtt DBEC2SecurityGroup.GroupId
-      AllocatedStorage: "5"
-      DBInstanceClass: db.t3.micro
-      Engine: postgres
-      MasterUsername: sa
-      MasterUserPassword: "12345678"
-      Tags:
-        - Key: Name
-          Value: D
-    DeletionPolicy: Snapshot
-    UpdateReplacePolicy: Snapshot
-  # Database subnet group
-  DBSubnet:
-    Type: AWS::RDS::DBSubnetGroup
-    Properties:
-      DBSubnetGroupName: DemoDBSubnetGroup
-      DBSubnetGroupDescription: DemoDBSubnetGroup
-      SubnetIds:
-        - !Ref PrivateSubnet3
-        - !Ref PrivateSubnet4
-      Tags:
-        - Key: Name
-          Value: DemoDBSubnetGroup
-  # D instance security group
-  DBEC2SecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      VpcId: 
-        Fn::ImportValue: !Ref VPCId
-      GroupName: DemoDBSesurityGroup
-      GroupDescription: Allow postgres inbound traffic
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 5432
-          ToPort: 5432
-          CidrIp: "0.0.0.0/0"
-      Tags:
-        - Key: Name
-          Value: DemoDBSesurityGroup
   
 
 

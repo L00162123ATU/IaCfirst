@@ -1,4 +1,9 @@
- 
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description:
+  IaC Assignment1 Create Cloud formation stack for a small business mini network
+  Subnets Route Tables NAT Gateway 
  
 Parameters:
   VPCId:
