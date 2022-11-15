@@ -45,6 +45,7 @@ Resources:
           ToPort: 22
           CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
+
 # allowing traffic to F
         - IpProtocol: tcp
           FromPort: 80
@@ -58,6 +59,7 @@ Resources:
           FromPort: -1
           ToPort: -1
           CidrIp: 10.0.1.0/24
+ 
  # allowing traffic to A         
         - IpProtocol: tcp
           FromPort: 80
@@ -76,6 +78,7 @@ Resources:
           Value : !Ref ProjectName
       VpcId: 
         Fn::ImportValue: !Ref VPCId 
+
 # J instance
   ec2InstanceJ:
     Type: AWS::EC2::Instance
@@ -120,6 +123,7 @@ Resources:
           Value : !Ref ProjectName
       VpcId: 
         Fn::ImportValue: !Ref VPCId 
+  
   # F instance
   ec2InstanceF:
     Type: AWS::EC2::Instance
@@ -172,6 +176,7 @@ Resources:
           Value : !Ref ProjectName
       VpcId: 
         Fn::ImportValue: !Ref VPCId        
+ 
   # A instance
   ec2InstanceA:
     Type: AWS::EC2::Instance

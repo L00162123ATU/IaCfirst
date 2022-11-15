@@ -56,6 +56,7 @@ Resources:
           Value : !Ref ProjectName
       VpcId: 
         Fn::ImportValue: !Ref VPCId
+  
   # public route 
   PublicRoute:
     Type: AWS::EC2::Route
@@ -64,6 +65,7 @@ Resources:
       GatewayId: 
         Fn::ImportValue: !Ref InternetGatewayId
       RouteTableId: !Ref RouteTable
+ 
   # public subnet
   PublicSubnet1RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -111,6 +113,7 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
+  
   # route table for instance A
   RouteTableInstA:
     Type: AWS::EC2::RouteTable
@@ -120,6 +123,7 @@ Resources:
           Value : !Ref ProjectName
       VpcId: 
         Fn::ImportValue: !Ref VPCId
+  
   #  route for NATGat 
   NATGatewayRoute:
     Type: AWS::EC2::Route
@@ -144,6 +148,7 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
+
 # private subnet for D instance 
   PrivateSubnet4:  
     Type: AWS::EC2::Subnet

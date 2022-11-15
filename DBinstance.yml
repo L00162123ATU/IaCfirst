@@ -57,6 +57,7 @@ Resources:
       Tags:
         - Key: Name
           Value: DemoDBSubnetGroup
+  
   # D instance security group
   DBEC2SecurityGroup:
     Type: AWS::EC2::SecurityGroup

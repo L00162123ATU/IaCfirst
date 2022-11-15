@@ -33,6 +33,7 @@ Resources:
       Tags: 
         - Key : Project Name
           Value : !Ref ProjectName
+
  # internet Gateway
   InternetG:
     Type: AWS::EC2::InternetGateway
